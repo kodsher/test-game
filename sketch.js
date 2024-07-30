@@ -30,6 +30,7 @@ function init() {
     const playerTexture = new THREE.TextureLoader().load('mochi.png');
     const playerMaterial = new THREE.MeshBasicMaterial({ map: playerTexture });
     player = new THREE.Mesh(playerGeometry, playerMaterial);
+    player.position.z = 0; // Ensure player is on the z=0 plane
     scene.add(player);
     targetPos = player.position.clone();
 
@@ -42,7 +43,7 @@ function init() {
         star.position.set(
             (Math.random() - 0.5) * 20,
             (Math.random() - 0.5) * 20,
-            (Math.random() - 0.5) * 20
+            0 // Ensure star is on the z=0 plane
         );
         scene.add(star);
         stars.push(star);
@@ -122,11 +123,12 @@ function onMouseMove(event) {
 }
 
 function updateTargetPos(mouseX, mouseY) {
-    const vector = new THREE.Vector3(mouseX, mouseY, 0.5);
+    const vector = new THREE.Vector3(mouseX, mouseY, 0);
     vector.unproject(camera);
     const dir = vector.sub(camera.position).normalize();
     const distance = -camera.position.z / dir.z;
     targetPos = camera.position.clone().add(dir.multiplyScalar(distance));
+    targetPos.z = 0; // Ensure target position is on the z=0 plane
 }
 
 function onWindowResize() {

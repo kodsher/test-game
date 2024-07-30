@@ -6,7 +6,7 @@ let playerSize = 2;
 let starSize = 1;
 let backgroundStarSize = 0.05;
 let targetPos;
-let shrinkRate = 0.001;
+let shrinkRate = 0.0007;
 let flashDuration = 0.03;
 let flashTimer = 0;
 let starCreationInterval = 850; // 1000 ms = 1 second
@@ -144,7 +144,7 @@ function update() {
         if (player.position.distanceTo(stars[i].position) < (playerSize / 2 + starSize / 2)) {
             scene.remove(stars[i]);
             stars.splice(i, 1);
-            player.scale.multiplyScalar(1.1); // Increase player size by 10%
+            player.scale.multiplyScalar(1.04); // Increase player size by 10%
             player.material = flashMaterial; // Set to white for flash effect
             flashTimer = flashDuration;
             updateScore();

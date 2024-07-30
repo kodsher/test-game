@@ -1,8 +1,10 @@
 let scene, camera, renderer;
-let player, stars = [];
+let player, stars = [], backgroundStars = [];
 let numStars = 10;
+let numBackgroundStars = 100;
 let playerSize = 2;
 let starSize = 1;
+let backgroundStarSize = 0.05;
 let targetPos;
 let score = 0;
 
@@ -46,6 +48,20 @@ function init() {
         stars.push(star);
     }
 
+    // Background stars setup
+    for (let i = 0; i < numBackgroundStars; i++) {
+        const backgroundStarGeometry = new THREE.SphereGeometry(backgroundStarSize, 8, 8);
+        const backgroundStarMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        const backgroundStar = new THREE.Mesh(backgroundStarGeometry, backgroundStarMaterial);
+        backgroundStar.position.set(
+            (Math.random() - 0.5) * 100,
+            (Math.random() - 0.5) * 100,
+            (Math.random() - 0.5) * 100
+        );
+        scene.add(backgroundStar);
+        backgroundStars.push(backgroundStar);
+    }
+
     // Event listeners for touch and mouse move
     document.addEventListener('touchmove', onTouchMove, false);
     document.addEventListener('mousemove', onMouseMove, false);
@@ -68,6 +84,16 @@ function animate() {
 function update() {
     const lerpFactor = 0.1;
     player.position.lerp(targetPos, lerpFactor);
+
+    // Spin the player cube
+    player.rotation.x += 0.01;
+    player.rotation.y += 0.01;
+
+    // Spin the stars
+    stars.forEach(star => {
+        star.rotation.x += 0.01;
+        star.rotation.y += 0.01;
+    });
 
     // Check for star collection with improved collision detection
     for (let i = stars.length - 1; i >= 0; i--) {

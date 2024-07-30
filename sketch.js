@@ -44,9 +44,17 @@ function init() {
         stars.push(star);
     }
 
-    // Event listener for touch move
+    // Event listeners for touch and mouse move
     document.addEventListener('touchmove', onTouchMove, false);
     document.addEventListener('mousemove', onMouseMove, false);
+
+    // Prevent scrolling on touch and mouse events
+    document.addEventListener('touchstart', preventDefault, { passive: false });
+    document.addEventListener('touchmove', preventDefault, { passive: false });
+    document.addEventListener('wheel', preventDefault, { passive: false });
+
+    // Resize event
+    window.addEventListener('resize', onWindowResize, false);
 }
 
 function animate() {
@@ -71,19 +79,20 @@ function update() {
 }
 
 function onTouchMove(event) {
+    event.preventDefault(); // Prevent scrolling
     const touch = event.touches[0];
     const mouseX = (touch.clientX / window.innerWidth) * 2 - 1;
     const mouseY = -(touch.clientY / window.innerHeight) * 2 + 1;
-    const vector = new THREE.Vector3(mouseX, mouseY, 0.5);
-    vector.unproject(camera);
-    const dir = vector.sub(camera.position).normalize();
-    const distance = -camera.position.z / dir.z;
-    targetPos = camera.position.clone().add(dir.multiplyScalar(distance));
+    updateTargetPos(mouseX, mouseY);
 }
 
 function onMouseMove(event) {
     const mouseX = (event.clientX / window.innerWidth) * 2 - 1;
     const mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+    updateTargetPos(mouseX, mouseY);
+}
+
+function updateTargetPos(mouseX, mouseY) {
     const vector = new THREE.Vector3(mouseX, mouseY, 0.5);
     vector.unproject(camera);
     const dir = vector.sub(camera.position).normalize();
@@ -91,8 +100,20 @@ function onMouseMove(event) {
     targetPos = camera.position.clone().add(dir.multiplyScalar(distance));
 }
 
-window.addEventListener('resize', () => {
+function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
-});
+}
+
+function preventDefault(event) {
+    event.preventDefault();
+}
+
+// Initial debugging information
+console.log('Three.js version:', THREE.REVISION);
+console.log('Scene:', scene);
+console.log('Camera:', camera);
+console.log('Renderer:', renderer);
+console.log('Player:', player);
+console.log('Stars:', stars);

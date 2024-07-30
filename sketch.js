@@ -1,4 +1,4 @@
-let scene, camera, renderer;
+let scene, camera, renderer, labelRenderer;
 let player, stars = [], backgroundStars = [];
 let numStars = 10;
 let numBackgroundStars = 100;
@@ -13,6 +13,7 @@ let flashTimer = 0;
 let starCreationInterval = 2000; // 2000 ms = 2 seconds
 let lastStarCreationTime = 0;
 let flashLight;
+let scoreElement;
 
 init();
 animate();
@@ -30,6 +31,16 @@ function init() {
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
+
+    // CSS2DRenderer setup for score display
+    labelRenderer = new THREE.CSS2DRenderer();
+    labelRenderer.setSize(window.innerWidth, window.innerHeight);
+    labelRenderer.domElement.style.position = 'absolute';
+    labelRenderer.domElement.style.top = '0px';
+    document.body.appendChild(labelRenderer.domElement);
+
+    // Score element setup
+    scoreElement = document.getElementById('score');
 
     // Player setup
     const playerGeometry = new THREE.BoxGeometry(playerSize, playerSize, playerSize);
@@ -95,6 +106,7 @@ function animate() {
     requestAnimationFrame(animate);
     update();
     renderer.render(scene, camera);
+    labelRenderer.render(scene, camera);
 }
 
 function update() {
@@ -116,6 +128,7 @@ function update() {
         player.scale.x -= shrinkRate;
         player.scale.y -= shrinkRate;
         player.scale.z -= shrinkRate;
+        updateScore();
     }
 
     // Flash effect timer
@@ -132,10 +145,10 @@ function update() {
         if (player.position.distanceTo(stars[i].position) < (playerSize / 2 + starSize / 2)) {
             scene.remove(stars[i]);
             stars.splice(i, 1);
-            score++;
             player.scale.multiplyScalar(1.1); // Increase player size by 10%
             flashLight.position.copy(player.position); // Move flash light to player position
             flashTimer = flashDuration;
+            updateScore();
             console.log('Score: ' + score);
         }
     }
@@ -145,6 +158,11 @@ function update() {
         createStar(new THREE.TextureLoader().load('michi.png'));
         lastStarCreationTime = Date.now();
     }
+}
+
+function updateScore() {
+    score = Math.floor(player.scale.x * 10);
+    scoreElement.innerHTML = 'Score: ' + score;
 }
 
 function onTouchMove(event) {
@@ -174,6 +192,7 @@ function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+    labelRenderer.setSize(window.innerWidth, window.innerHeight);
 }
 
 function preventDefault(event) {

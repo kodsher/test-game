@@ -6,11 +6,10 @@ let playerSize = 2;
 let starSize = 1;
 let backgroundStarSize = 0.05;
 let targetPos;
-let score = 0;
 let shrinkRate = 0.001;
 let flashDuration = 0.01;
 let flashTimer = 0;
-let starCreationInterval = 2000; // 2000 ms = 2 seconds
+let starCreationInterval = 1000; // 1000 ms = 1 second
 let lastStarCreationTime = 0;
 let flashLight;
 let scoreElement;
@@ -98,6 +97,7 @@ function createStar(texture) {
         (Math.random() - 0.5) * 20,
         0 // Ensure star is on the z=0 plane
     );
+    star.userData = { direction: new THREE.Vector3().subVectors(star.position, player.position).normalize() };
     scene.add(star);
     stars.push(star);
 }
@@ -117,10 +117,11 @@ function update() {
     player.rotation.x += 0.01;
     player.rotation.y += 0.01;
 
-    // Spin the stars
+    // Spin the stars and move them away from the player
     stars.forEach(star => {
         star.rotation.x += 0.01;
         star.rotation.y += 0.01;
+        star.position.add(star.userData.direction.clone().multiplyScalar(0.01)); // Move away from player
     });
 
     // Shrink the player over time
@@ -153,7 +154,7 @@ function update() {
         }
     }
 
-    // Create a new star every 2 seconds
+    // Create a new star every 1 second
     if (Date.now() - lastStarCreationTime > starCreationInterval) {
         createStar(new THREE.TextureLoader().load('michi.png'));
         lastStarCreationTime = Date.now();
@@ -161,8 +162,8 @@ function update() {
 }
 
 function updateScore() {
-    score = Math.floor(player.scale.x * 10);
-    scoreElement.innerHTML = 'Score: ' + score;
+    let size = player.scale.x * playerSize;
+    scoreElement.innerHTML = 'Score: ' + size.toFixed(2);
 }
 
 function onTouchMove(event) {

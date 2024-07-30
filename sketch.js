@@ -10,8 +10,9 @@ let score = 0;
 let shrinkRate = 0.001;
 let flashDuration = 0.01;
 let flashTimer = 0;
-let starCreationInterval = 5000; // 5000 ms = 5 seconds
+let starCreationInterval = 2000; // 2000 ms = 2 seconds
 let lastStarCreationTime = 0;
+let flashLight;
 
 init();
 animate();
@@ -58,6 +59,11 @@ function init() {
         scene.add(backgroundStar);
         backgroundStars.push(backgroundStar);
     }
+
+    // Flash light setup
+    flashLight = new THREE.PointLight(0xffffff, 1, 50);
+    flashLight.position.set(0, 0, 10);
+    scene.add(flashLight);
 
     // Event listeners for touch and mouse move
     document.addEventListener('touchmove', onTouchMove, false);
@@ -115,8 +121,9 @@ function update() {
     // Flash effect timer
     if (flashTimer > 0) {
         flashTimer -= 0.016; // Approximate frame time
+        flashLight.intensity = 2; // Increase intensity for flash effect
         if (flashTimer <= 0) {
-            player.material.color.set(0xffffff); // Reset to original color
+            flashLight.intensity = 0; // Turn off the flash light
         }
     }
 
@@ -127,13 +134,13 @@ function update() {
             stars.splice(i, 1);
             score++;
             player.scale.multiplyScalar(1.1); // Increase player size by 10%
-            player.material.color.set(0xffffff); // Set to white for flash effect
+            flashLight.position.copy(player.position); // Move flash light to player position
             flashTimer = flashDuration;
             console.log('Score: ' + score);
         }
     }
 
-    // Create a new star every 5 seconds
+    // Create a new star every 2 seconds
     if (Date.now() - lastStarCreationTime > starCreationInterval) {
         createStar(new THREE.TextureLoader().load('michi.png'));
         lastStarCreationTime = Date.now();

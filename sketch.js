@@ -90,6 +90,7 @@ function createStar(texture) {
         (Math.random() - 0.5) * 20,
         0 // Ensure star is on the z=0 plane
     );
+    star.userData = { direction: new THREE.Vector3().subVectors(star.position, player.position).normalize() };
     scene.add(star);
     stars.push(star);
 }
@@ -108,10 +109,11 @@ function update() {
     player.rotation.x += 0.01;
     player.rotation.y += 0.01;
 
-    // Spin the stars
+    // Spin the stars and move them away from the player
     stars.forEach(star => {
         star.rotation.x += 0.01;
         star.rotation.y += 0.01;
+        star.position.add(star.userData.direction.clone().multiplyScalar(0.04)); // Move away from player 4 times faster
     });
 
     // Shrink the player over time
@@ -136,10 +138,11 @@ function update() {
         if (player.position.distanceTo(stars[i].position) < (playerSize / 2 + starSize / 2)) {
             scene.remove(stars[i]);
             stars.splice(i, 1);
-            player.scale.multiplyScalar(1.1); // Increase player size by 10%
+            player.scale.multiplyScalar(1.2); // Increase player size by 20%
             flashLight.position.copy(player.position); // Move flash light to player position
             flashTimer = flashDuration;
             updateScore();
+            console.log('Score: ' + score);
         }
     }
 

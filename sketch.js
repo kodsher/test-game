@@ -101,6 +101,7 @@ function update() {
             scene.remove(stars[i]);
             stars.splice(i, 1);
             score++;
+            player.scale.multiplyScalar(1.1); // Increase player size by 10%
             console.log('Score: ' + score);
         }
     }

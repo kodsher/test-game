@@ -1,4 +1,4 @@
-let scene, camera, renderer, labelRenderer;
+let scene, camera, renderer;
 let player, stars = [], backgroundStars = [];
 let numStars = 10;
 let numBackgroundStars = 100;
@@ -30,13 +30,6 @@ function init() {
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
-
-    // CSS2DRenderer setup for score display
-    labelRenderer = new THREE.CSS2DRenderer();
-    labelRenderer.setSize(window.innerWidth, window.innerHeight);
-    labelRenderer.domElement.style.position = 'absolute';
-    labelRenderer.domElement.style.top = '0px';
-    document.body.appendChild(labelRenderer.domElement);
 
     // Score element setup
     scoreElement = document.getElementById('score');
@@ -106,7 +99,6 @@ function animate() {
     requestAnimationFrame(animate);
     update();
     renderer.render(scene, camera);
-    labelRenderer.render(scene, camera);
 }
 
 function update() {
@@ -193,7 +185,6 @@ function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
-    labelRenderer.setSize(window.innerWidth, window.innerHeight);
 }
 
 function preventDefault(event) {

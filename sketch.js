@@ -7,11 +7,11 @@ let starSize = 1;
 let backgroundStarSize = 0.05;
 let targetPos;
 let shrinkRate = 0.001;
-let flashDuration = 0.01;
+let flashDuration = 0.03;
 let flashTimer = 0;
 let starCreationInterval = 1000; // 1000 ms = 1 second
 let lastStarCreationTime = 0;
-let flashLight;
+let originalMaterial, flashMaterial;
 let scoreElement;
 
 init();
@@ -37,8 +37,9 @@ function init() {
     // Player setup
     const playerGeometry = new THREE.BoxGeometry(playerSize, playerSize, playerSize);
     const playerTexture = new THREE.TextureLoader().load('mochi.png');
-    const playerMaterial = new THREE.MeshBasicMaterial({ map: playerTexture });
-    player = new THREE.Mesh(playerGeometry, playerMaterial);
+    originalMaterial = new THREE.MeshBasicMaterial({ map: playerTexture });
+    flashMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    player = new THREE.Mesh(playerGeometry, originalMaterial);
     player.position.z = 0; // Ensure player is on the z=0 plane
     scene.add(player);
     targetPos = player.position.clone();
@@ -62,11 +63,6 @@ function init() {
         scene.add(backgroundStar);
         backgroundStars.push(backgroundStar);
     }
-
-    // Flash light setup
-    flashLight = new THREE.PointLight(0xffffff, 1, 50);
-    flashLight.position.set(0, 0, 10);
-    scene.add(flashLight);
 
     // Event listeners for touch and mouse move
     document.addEventListener('touchmove', onTouchMove, false);
@@ -138,9 +134,8 @@ function update() {
     // Flash effect timer
     if (flashTimer > 0) {
         flashTimer -= 0.016; // Approximate frame time
-        flashLight.intensity = 2; // Increase intensity for flash effect
         if (flashTimer <= 0) {
-            flashLight.intensity = 0; // Turn off the flash light
+            player.material = originalMaterial; // Restore original material
         }
     }
 
@@ -150,7 +145,7 @@ function update() {
             scene.remove(stars[i]);
             stars.splice(i, 1);
             player.scale.multiplyScalar(1.2); // Increase player size by 20%
-            flashLight.position.copy(player.position); // Move flash light to player position
+            player.material = flashMaterial; // Set to white for flash effect
             flashTimer = flashDuration;
             updateScore();
             console.log('Score: ' + score);

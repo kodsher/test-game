@@ -6,10 +6,10 @@ let playerSize = 2;
 let starSize = 1;
 let backgroundStarSize = 0.05;
 let targetPos;
-let shrinkRate = 0.001;
+let shrinkRate = 0.07;
 let flashDuration = 0.03;
 let flashTimer = 0;
-let starCreationInterval = 1000; // 1000 ms = 1 second
+let starCreationInterval = 850; // 1000 ms = 1 second
 let lastStarCreationTime = 0;
 let originalMaterial, flashMaterial;
 let scoreElement;

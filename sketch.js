@@ -4,10 +4,12 @@ let numStars = 10;
 let starSize = 20;
 let playerSize = 40;
 let score = 0;
+let targetPos;
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
     player = createVector(width / 2, height - playerSize);
+    targetPos = player.copy();
 
     for (let i = 0; i < numStars; i++) {
         stars.push(createVector(random(width), random(height - 100)));
@@ -27,19 +29,10 @@ function draw() {
         ellipse(stars[i].x, stars[i].y, starSize);
     }
 
-    // Move player
-    if (keyIsDown(LEFT_ARROW)) {
-        player.x -= 5;
-    }
-    if (keyIsDown(RIGHT_ARROW)) {
-        player.x += 5;
-    }
-    if (keyIsDown(UP_ARROW)) {
-        player.y -= 5;
-    }
-    if (keyIsDown(DOWN_ARROW)) {
-        player.y += 5;
-    }
+    // Move player towards target position
+    let lerpFactor = 0.1; // Adjust this value for smoother or faster movement
+    player.x = lerp(player.x, targetPos.x, lerpFactor);
+    player.y = lerp(player.y, targetPos.y, lerpFactor);
 
     // Check for star collection
     for (let i = stars.length - 1; i >= 0; i--) {
@@ -56,7 +49,7 @@ function draw() {
 }
 
 function touchMoved() {
-    player.x = mouseX;
-    player.y = mouseY;
+    targetPos.x = mouseX;
+    targetPos.y = mouseY;
     return false;
 }

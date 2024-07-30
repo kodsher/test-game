@@ -7,6 +7,7 @@ let starSize = 1;
 let backgroundStarSize = 0.05;
 let targetPos;
 let score = 0;
+let shrinkRate = 0.001;
 
 init();
 animate();
@@ -37,16 +38,7 @@ function init() {
     // Stars setup
     const starTexture = new THREE.TextureLoader().load('michi.png');
     for (let i = 0; i < numStars; i++) {
-        const starGeometry = new THREE.BoxGeometry(starSize, starSize, starSize);
-        const starMaterial = new THREE.MeshBasicMaterial({ map: starTexture });
-        const star = new THREE.Mesh(starGeometry, starMaterial);
-        star.position.set(
-            (Math.random() - 0.5) * 20,
-            (Math.random() - 0.5) * 20,
-            0 // Ensure star is on the z=0 plane
-        );
-        scene.add(star);
-        stars.push(star);
+        createStar(starTexture);
     }
 
     // Background stars setup
@@ -76,6 +68,19 @@ function init() {
     window.addEventListener('resize', onWindowResize, false);
 }
 
+function createStar(texture) {
+    const starGeometry = new THREE.BoxGeometry(starSize, starSize, starSize);
+    const starMaterial = new THREE.MeshBasicMaterial({ map: texture });
+    const star = new THREE.Mesh(starGeometry, starMaterial);
+    star.position.set(
+        (Math.random() - 0.5) * 20,
+        (Math.random() - 0.5) * 20,
+        0 // Ensure star is on the z=0 plane
+    );
+    scene.add(star);
+    stars.push(star);
+}
+
 function animate() {
     requestAnimationFrame(animate);
     update();
@@ -96,6 +101,13 @@ function update() {
         star.rotation.y += 0.01;
     });
 
+    // Shrink the player over time
+    if (player.scale.x > 0.1) {
+        player.scale.x -= shrinkRate;
+        player.scale.y -= shrinkRate;
+        player.scale.z -= shrinkRate;
+    }
+
     // Check for star collection with improved collision detection
     for (let i = stars.length - 1; i >= 0; i--) {
         if (player.position.distanceTo(stars[i].position) < (playerSize / 2 + starSize / 2)) {
@@ -104,6 +116,7 @@ function update() {
             score++;
             player.scale.multiplyScalar(1.1); // Increase player size by 10%
             console.log('Score: ' + score);
+            createStar(new THREE.TextureLoader().load('michi.png')); // Create a new star
         }
     }
 }

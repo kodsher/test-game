@@ -25,15 +25,17 @@ function init() {
 
     // Player setup
     const playerGeometry = new THREE.BoxGeometry(playerSize, playerSize, playerSize);
-    const playerMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const playerTexture = new THREE.TextureLoader().load('mochi.png');
+    const playerMaterial = new THREE.MeshBasicMaterial({ map: playerTexture });
     player = new THREE.Mesh(playerGeometry, playerMaterial);
     scene.add(player);
     targetPos = player.position.clone();
 
     // Stars setup
+    const starTexture = new THREE.TextureLoader().load('michi.png');
     for (let i = 0; i < numStars; i++) {
         const starGeometry = new THREE.BoxGeometry(starSize, starSize, starSize);
-        const starMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+        const starMaterial = new THREE.MeshBasicMaterial({ map: starTexture });
         const star = new THREE.Mesh(starGeometry, starMaterial);
         star.position.set(
             (Math.random() - 0.5) * 20,
@@ -67,9 +69,9 @@ function update() {
     const lerpFactor = 0.1;
     player.position.lerp(targetPos, lerpFactor);
 
-    // Check for star collection
+    // Check for star collection with improved collision detection
     for (let i = stars.length - 1; i >= 0; i--) {
-        if (player.position.distanceTo(stars[i].position) < (playerSize + starSize) / 2) {
+        if (player.position.distanceTo(stars[i].position) < (playerSize / 2 + starSize / 2)) {
             scene.remove(stars[i]);
             stars.splice(i, 1);
             score++;

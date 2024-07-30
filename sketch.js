@@ -109,6 +109,13 @@ function update() {
     player.rotation.x += 0.01;
     player.rotation.y += 0.01;
 
+    // Calculate boundaries based on camera and window size
+    const aspect = window.innerWidth / window.innerHeight;
+    const frustumHeight = 2 * Math.tan((camera.fov * Math.PI) / 360) * camera.position.z;
+    const frustumWidth = frustumHeight * aspect;
+    const xBound = frustumWidth / 2 - starSize / 2;
+    const yBound = frustumHeight / 2 - starSize / 2;
+
     // Spin the stars and move them away from the player
     stars.forEach(star => {
         star.rotation.x += 0.01;
@@ -116,8 +123,8 @@ function update() {
         star.position.add(star.userData.direction.clone().multiplyScalar(0.04)); // Move away from player 4 times faster
 
         // Constrain stars within window boundaries
-        star.position.x = Math.max(Math.min(star.position.x, (window.innerWidth / 2) / 50), -(window.innerWidth / 2) / 50);
-        star.position.y = Math.max(Math.min(star.position.y, (window.innerHeight / 2) / 50), -(window.innerHeight / 2) / 50);
+        star.position.x = Math.max(Math.min(star.position.x, xBound), -xBound);
+        star.position.y = Math.max(Math.min(star.position.y, yBound), -yBound);
     });
 
     // Shrink the player over time

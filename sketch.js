@@ -8,6 +8,10 @@ let backgroundStarSize = 0.05;
 let targetPos;
 let score = 0;
 let shrinkRate = 0.001;
+let flashDuration = 0.01;
+let flashTimer = 0;
+let starCreationInterval = 5000; // 5000 ms = 5 seconds
+let lastStarCreationTime = 0;
 
 init();
 animate();
@@ -108,6 +112,14 @@ function update() {
         player.scale.z -= shrinkRate;
     }
 
+    // Flash effect timer
+    if (flashTimer > 0) {
+        flashTimer -= 0.016; // Approximate frame time
+        if (flashTimer <= 0) {
+            player.material.color.set(0xffffff); // Reset to original color
+        }
+    }
+
     // Check for star collection with improved collision detection
     for (let i = stars.length - 1; i >= 0; i--) {
         if (player.position.distanceTo(stars[i].position) < (playerSize / 2 + starSize / 2)) {
@@ -115,9 +127,16 @@ function update() {
             stars.splice(i, 1);
             score++;
             player.scale.multiplyScalar(1.1); // Increase player size by 10%
+            player.material.color.set(0xffffff); // Set to white for flash effect
+            flashTimer = flashDuration;
             console.log('Score: ' + score);
-            createStar(new THREE.TextureLoader().load('michi.png')); // Create a new star
         }
+    }
+
+    // Create a new star every 5 seconds
+    if (Date.now() - lastStarCreationTime > starCreationInterval) {
+        createStar(new THREE.TextureLoader().load('michi.png'));
+        lastStarCreationTime = Date.now();
     }
 }
 

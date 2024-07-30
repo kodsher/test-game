@@ -144,7 +144,7 @@ function update() {
         if (player.position.distanceTo(stars[i].position) < (playerSize / 2 + starSize / 2)) {
             scene.remove(stars[i]);
             stars.splice(i, 1);
-            player.scale.multiplyScalar(1.2); // Increase player size by 20%
+            player.scale.multiplyScalar(1.1); // Increase player size by 10%
             player.material = flashMaterial; // Set to white for flash effect
             flashTimer = flashDuration;
             updateScore();

@@ -114,6 +114,10 @@ function update() {
         star.rotation.x += 0.01;
         star.rotation.y += 0.01;
         star.position.add(star.userData.direction.clone().multiplyScalar(0.04)); // Move away from player 4 times faster
+
+        // Constrain stars within window boundaries
+        star.position.x = Math.max(Math.min(star.position.x, (window.innerWidth / 2) / 50), -(window.innerWidth / 2) / 50);
+        star.position.y = Math.max(Math.min(star.position.y, (window.innerHeight / 2) / 50), -(window.innerHeight / 2) / 50);
     });
 
     // Shrink the player over time

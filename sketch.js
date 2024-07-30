@@ -90,7 +90,6 @@ function createStar(texture) {
         (Math.random() - 0.5) * 20,
         0 // Ensure star is on the z=0 plane
     );
-    star.userData = { direction: new THREE.Vector3().subVectors(star.position, player.position).normalize() };
     scene.add(star);
     stars.push(star);
 }
@@ -109,11 +108,10 @@ function update() {
     player.rotation.x += 0.01;
     player.rotation.y += 0.01;
 
-    // Spin the stars and move them away from the player
+    // Spin the stars
     stars.forEach(star => {
         star.rotation.x += 0.01;
         star.rotation.y += 0.01;
-        star.position.add(star.userData.direction.clone().multiplyScalar(0.01)); // Move away from player
     });
 
     // Shrink the player over time
@@ -142,7 +140,6 @@ function update() {
             flashLight.position.copy(player.position); // Move flash light to player position
             flashTimer = flashDuration;
             updateScore();
-            console.log('Score: ' + score);
         }
     }
 
